@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@*": ["src/*"],
+      "@modules/*": ["src/modules/*"],
+      "@services/*": ["src/services/*"],
+      "@utils/*": ["src/utils/*"],
+      "@interface/*": ["src/types/interfaces/*"],
+      "@enum/*": ["src/types/enums/*"],
+      "@guard/*": ["src/guards/*"],
+      "@constants/*": ["src/constants/*"],
+      "@app/*": ["src/modules/app/*"],
+      "@mail/*": ["src/mail/*"],
+      // add more paths heres
+    }
+  }
+}

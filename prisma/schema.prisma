@@ -1,0 +1,202 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "rhel-openssl-1.0.x"]
+  previewFeatures = ["referentialActions"]
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        String
+  acronymn    String?
+  description String?
+  type        Int              @default(1) //1 for SYSTEM CREATED; 0 for USER CREATED
+  status      Int              @default(1) //1 for active; 0 for inactive
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @default(now())
+  admin       Admin[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          Int              @id @default(autoincrement())
+  name        String
+  permissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  role         Role       @relation(fields: [roleId], references: [id])
+  roleId       Int
+  permissions  Permission @relation(fields: [permissionId], references: [id])
+  permissionId Int
+
+  @@map("rolePermissions")
+}
+
+model Admin {
+  id               Int            @id @default(autoincrement())
+  email            String         @unique
+  password         String?
+  firstName        String
+  lastName         String
+  role             Role           @relation(fields: [roleId], references: [id])
+  roleId           Int            @default(1)
+  admin            AdminProfile[]
+  isActive         Int            @default(1)
+  isVerified       Int            @default(0)
+  verificationCode String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now())
+
+  @@map("admins")
+}
+
+model AdminProfile {
+  id             Int     @id @default(autoincrement())
+  admin          Admin   @relation(fields: [adminId], references: [id])
+  adminId        Int     @unique
+  phoneNumber    String?
+  profilePicture String?
+  about          String?
+  address        String?
+  state          String?
+  country        String?
+
+  @@map("adminProfiles")
+}
+
+model User {
+  id                        Int          @id @default(autoincrement())
+  userID                    String       @unique @default(uuid())
+  firstName                 String?
+  lastName                  String?
+  email                     String       @unique
+  phoneNumber               String?      @unique
+  txPin                     Int?
+  spID                      Int?         @unique
+  acct_balance              Float?       @default(0.00)
+  password                  String
+  isVerified                Int?
+  isActive                  Int?
+  verificationCode          Int?
+  role                      USER_ROLES   @default(MEMBER)
+  onlineStatus              Int          @default(0)
+  registeredIp              String?
+  registeredCountry         String?
+  registeredState           String?
+  registeredRegion          String?
+  registeredTimezone        String?
+  registeredBrowser         String?
+  registeredOperatingSytsem String?
+  registeredDeviceType      String?
+  passwordChangedAt         DateTime?
+  createdAt                 DateTime     @default(now())
+  updatedAt                 DateTime     @default(now())
+  userProfile               UserProfile?
+
+  money_sent TransactionHistory[] @relation("sender")
+  money_received TransactionHistory[]  @relation("recipient")
+  @@map("users")
+}
+
+model UserPasswordReset {
+  id        Int      @id @default(autoincrement())
+  email     String
+  token     String
+  status    Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@map("userPasswordResets")
+}
+
+model UserProfile {
+  id          Int     @id @default(autoincrement())
+  user        User    @relation(fields: [userID], references: [userID])
+  userID      String  @unique
+  phoneNumber String?
+  biography   String?
+  address     String?
+  state       String?
+  country     String?
+  timezone    String?
+  website     String?
+  avatar      String?
+
+  @@map("userProfiles")
+}
+
+// model UserWallet {
+//   id        Int      @id @default(autoincrement())
+//   uid       String   @unique @default(uuid())
+//   spId      String?
+//   balance   Float?   @default(0.00)
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @default(now())
+
+//   @@map("user_wallet")
+// }
+
+model TransactionHistory {
+  id    Int    @id @default(autoincrement())
+  t_ref String @unique @default(uuid())
+  recipient   User @relation("recipient", fields: [recipientId], references: [id])
+  recipientId Int
+  sender      User @relation("sender", fields: [senderId], references: [id])
+  senderId    Int
+
+  transaction_amount Float
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @default(now())
+
+  @@map("transaction_history")
+}
+
+model Gallery {
+  id         Int      @id @default(autoincrement())
+  imageName  String?  @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+}
+
+enum PERMISSIONS {
+  FULL_ACCESS
+
+  // app permissions
+
+  // user permissions
+  CAN_CREATE_USER
+  CAN_READ_USER
+  CAN_EDIT_USER
+  CAN_FULL_EDIT_USER
+  CAN_DELETE_USER
+
+
+  // role permissions
+  CAN_CREATE_ROLE
+  CAN_READ_ROLE
+  CAN_READ_ALL_ROLE
+  CAN_EDIT_ROLE
+  CAN_DELETE_ROLE
+  CAN_READ_PERMISSIONS
+  CAN_UPDATE_PERMISSIONS
+}
+
+enum USER_ROLES {
+  MEMBER
+  GUEST
+  ADMIN
+}
+
+enum TRANSACTION_STATUS {
+  PEDNING
+  COMPLETED
+}
