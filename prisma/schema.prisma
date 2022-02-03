@@ -120,8 +120,8 @@ model UserPasswordReset {
 
 model UserProfile {
   id          Int     @id @default(autoincrement())
-  user        User    @relation(fields: [userID], references: [userID])
-  userID      String  @unique
+  user        User?    @relation(fields: [userID], references: [userID])
+  userID      String?  @unique
   phoneNumber String?
   biography   String?
   address     String?
