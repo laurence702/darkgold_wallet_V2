@@ -246,7 +246,7 @@ export class UserAuthService {
   }) {
     return {
       user: {
-        userId: payload.uid,
+        userID: payload.uid,
         firstName: payload.firstName,
         lastName: payload.lastName,
         email: payload.email,
