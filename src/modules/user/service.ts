@@ -85,6 +85,11 @@ export class UserAuthService {
           email: email,
         },
       });
+      const isPhoneExist = await this.prisma.user.findFirst({
+        where: {
+          phoneNumber: phoneNumber,
+        },
+      });
       //ensures two people dont have same spId
       const spIDExists = await this.prisma.user.findFirst({
         where: {
@@ -95,10 +100,10 @@ export class UserAuthService {
         //generate new ID
         const spID = +Math.abs(this.generatePocketID());
       }
-      if (isEmailExist) {
+      if (isEmailExist || isPhoneExist) {
         throw new BadRequestException({
           status: 'failed',
-          message: 'Email Address already exist',
+          message: 'Email or Phone already taken',
         });
       }
       const verificationCode = randomInt(1001, 9999);
@@ -114,7 +119,7 @@ export class UserAuthService {
           password: await bcrypt.hash(password, 10),
           isActive: 1,
           isVerified: 0,
-          spID: +spID,
+          spID: +Math.abs(spID),
           verificationCode: verificationCode,
           registeredIp: userLocation.data.query,
           registeredCountry: userLocation.data.country,
