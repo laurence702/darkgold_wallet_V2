@@ -10,7 +10,7 @@ import {
 import { TransactionService } from './service';
 import { CreateTransactionDto, UpdateTransactionDto } from './dto';
 
-@Controller('transaction')
+@Controller('v1/transaction')
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
@@ -39,11 +39,11 @@ export class TransactionController {
     @Param('id') id: string,
     @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
-    return this.transactionService.update(+id, updateTransactionDto);
+    //return this.transactionService.update(+id, updateTransactionDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.transactionService.remove(+id);
+    //return this.transactionService.remove(+id);
   }
 }

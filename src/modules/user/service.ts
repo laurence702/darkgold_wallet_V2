@@ -468,26 +468,30 @@ export class UserAuthService {
         where: {
           userID: userId,
         },
-        select: {
-          userID: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          phoneNumber: true,
-          isVerified: true,
-          isActive: true,
-          role: true,
-          spID: true,
-          acct_balance: true,
-          money_sent: true,
-          money_received: true,
-          onlineStatus: true,
-          registeredCountry: true,
-          registeredState: true,
-          registeredRegion: true,
-          registeredTimezone: true,
-          createdAt: true,
-          updatedAt: true,
+        // select: {
+        //   userID: true,
+        //   firstName: true,
+        //   lastName: true,
+        //   email: true,
+        //   phoneNumber: true,
+        //   isVerified: true,
+        //   isActive: true,
+        //   role: true,
+        //   spID: true,
+        //   acct_balance: true,
+        //   money_sent: true,
+        //   money_received: true,
+        //   onlineStatus: true,
+        //   registeredCountry: true,
+        //   registeredState: true,
+        //   registeredRegion: true,
+        //   registeredTimezone: true,
+        //   createdAt: true,
+        //   updatedAt: true,
+        // },
+        include: {
+          userProfile: {},
+          money_sent: {},
         },
       });
       if (user) {
@@ -505,10 +509,15 @@ export class UserAuthService {
         where: {
           spID: spID,
         },
+        include: {
+          userProfile: {},
+          money_sent: {},
+        },
       });
       if (user) {
         return user;
       }
+      throw new NotFoundException('User not found');
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -527,45 +536,19 @@ export class UserAuthService {
   async getAllUsers(): Promise<any> {
     try {
       const users = await this.prisma.user.findMany({
-        select: {
-          id: true,
-          userID: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          phoneNumber: true,
-          isVerified: true,
-          isActive: true,
-          acct_balance: true,
-          verificationCode: true,
-          role: true,
-          onlineStatus: true,
-          registeredIp: true,
-          money_received: true,
-          money_sent: true,
-          spID: true,
-          registeredCountry: true,
-          registeredState: true,
-          registeredRegion: true,
-          registeredTimezone: true,
-          registeredBrowser: true,
-          registeredOperatingSytsem: true,
-          registeredDeviceType: true,
-          txPin: true,
+        include: {
+          userProfile: {},
+          money_sent: {},
+          money_received: {},
         },
       });
       if (users) {
         return {
-          status: HttpStatus.OK,
           message: 'List of all users',
           data: users,
         };
       }
-      return {
-        status: HttpStatus.NOT_FOUND,
-        message: 'No user found',
-        data: [],
-      };
+      throw new NotFoundException('No user found');
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

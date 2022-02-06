@@ -134,24 +134,13 @@ model UserProfile {
   @@map("userProfiles")
 }
 
-// model UserWallet {
-//   id        Int      @id @default(autoincrement())
-//   uid       String   @unique @default(uuid())
-//   spId      String?
-//   balance   Float?   @default(0.00)
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @default(now())
-
-//   @@map("user_wallet")
-// }
-
 model TransactionHistory {
   id    Int    @id @default(autoincrement())
   t_ref String @unique @default(uuid())
-  recipient   User @relation("recipient", fields: [recipientId], references: [id])
-  recipientId Int
-  sender      User @relation("sender", fields: [senderId], references: [id])
-  senderId    Int
+  recipient   User @relation("recipient", fields: [recipientId], references: [spID])
+  recipientId String
+  sender      User @relation("sender", fields: [senderId], references: [spID])
+  senderId    String
 
   transaction_amount Float
   createdAt          DateTime @default(now())
@@ -166,6 +155,17 @@ model Gallery {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 }
+
+// model UserWallet {
+//   id        Int      @id @default(autoincrement())
+//   uid       String   @unique @default(uuid())
+//   spId      String?
+//   balance   Float?   @default(0.00)
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @default(now())
+
+//   @@map("user_wallet")
+// }
 
 enum PERMISSIONS {
   FULL_ACCESS
