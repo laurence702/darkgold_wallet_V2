@@ -82,7 +82,7 @@ model User {
   email                     String       @unique
   phoneNumber               String?      @unique
   txPin                     Int?
-  spID                      Int?         @unique
+  spID                      String?      @unique
   acct_balance              Float?       @default(0.00)
   password                  String
   isVerified                Int?

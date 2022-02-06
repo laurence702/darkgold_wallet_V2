@@ -64,7 +64,7 @@ export class UserAuthController {
 
   @UseGuards(JwtAuthGuard, AuthGuard)
   @Get('getbyspid/:spid')
-  getUserBySpID(@Param('spid') spID: number): Promise<any> {
+  getUserBySpID(@Param('spid') spID: string): Promise<any> {
     try {
       return this.userAuthService.findBySpID(spID);
     } catch (error) {

@@ -19,6 +19,7 @@ import {
   ResetPasswordDto,
   changePasswordDto,
 } from './dto';
+const referralCodeGenerator = require('referral-code-generator');
 
 import {
   generateCode,
@@ -71,13 +72,14 @@ export class UserAuthService {
     }
   }
 
-  generatePocketID(): number {
-    const pocketID = Math.floor(new Date().valueOf() * Math.random());
+  generatePocketID(): string {
+    //const pocketID = Math.floor(new Date().valueOf() * Math.random()) * +1;
+    const pocketID = referralCodeGenerator.alphaNumeric('uppercase', 2, 3);
     return pocketID;
   }
 
   async register(data: RegisterDto) {
-    const spID = +Math.abs(this.generatePocketID());
+    const spID = this.generatePocketID();
     const { firstName, lastName, email, password, phoneNumber } = data;
     try {
       const isEmailExist = await this.prisma.user.findFirst({
@@ -98,7 +100,7 @@ export class UserAuthService {
       });
       if (spIDExists) {
         //generate new ID
-        const spID = +Math.abs(this.generatePocketID());
+        const spID = this.generatePocketID();
       }
       if (isEmailExist || isPhoneExist) {
         throw new BadRequestException({
@@ -119,7 +121,7 @@ export class UserAuthService {
           password: await bcrypt.hash(password, 10),
           isActive: 1,
           isVerified: 0,
-          spID: +Math.abs(spID),
+          spID: spID,
           verificationCode: verificationCode,
           registeredIp: userLocation.data.query,
           registeredCountry: userLocation.data.country,
@@ -247,7 +249,7 @@ export class UserAuthService {
     lastName: string;
     email: string;
     role: string;
-    spID: number;
+    spID: string;
   }) {
     return {
       user: {
@@ -497,7 +499,7 @@ export class UserAuthService {
     }
   }
 
-  async findBySpID(spID: number): Promise<any> {
+  async findBySpID(spID: string): Promise<any> {
     try {
       const user = await this.prisma.user.findUnique({
         where: {
