@@ -16,6 +16,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModules);
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
+  app.setGlobalPrefix('v2');
   const PORT = process.env.PORT || 8080;
   await app.listen(PORT);
   console.log(`App listening on http://localhost:${PORT}`);

@@ -10,7 +10,7 @@ import {
 import { TransactionService } from './service';
 import { CreateTransactionDto, UpdateTransactionDto } from './dto';
 
-@Controller('v1/transaction')
+@Controller('transaction')
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
