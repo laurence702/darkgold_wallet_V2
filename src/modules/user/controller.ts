@@ -44,12 +44,23 @@ export class UserAuthController {
 
   @UseGuards(JwtAuthGuard, AuthGuard)
   @Get('me')
-  async getLoggedInUser(@Request() req: any): Promise<any> {
+  async getLoggedInUser(
+    @Request() req: any,
+    otherFunctionIdentifier: any,
+  ): Promise<any> {
     try {
+      if (otherFunctionIdentifier == 'userIdOnly') return await req.user.userID;
       return await req.user;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Put('change-pin')
+  async changePin(@Body() body: any, @Request() req: any): Promise<any> {
+    const userId = await this.getLoggedInUser(req, 'userIdOnly');
+    return this.userAuthService.changePin(body, userId);
   }
 
   @UseGuards(JwtAuthGuard, AuthGuard)
@@ -100,7 +111,7 @@ export class UserAuthController {
     return this.userAuthService.resetPassword(body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthGuard)
   @Put('change-password')
   changePassword(
     @Body() body: changePasswordDto,

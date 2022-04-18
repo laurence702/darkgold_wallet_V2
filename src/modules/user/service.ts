@@ -619,4 +619,23 @@ export class UserAuthService {
       }
     }
   }
+
+  async changePin(body: any, userId: string): Promise<any> {
+    //const user = await this.findBySpID(userId);
+    const updatePin = await this.prisma.user.update({
+      where: {
+        userID: userId,
+      },
+      data: {
+        txPin: body.newPin,
+      },
+    });
+    if (updatePin) {
+      return { status: 'success', message: 'Pin Updated!' };
+    }
+    throw new BadRequestException({
+      status: 'failed',
+      message: 'Oops something went wrong',
+    });
+  }
 }
