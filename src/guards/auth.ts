@@ -28,20 +28,26 @@ class AuthGuard implements CanActivate {
     }
 
     if (!token) throw new BadRequestException('Invalid Authorization Token');
-
-    const { userID, iat } = await retrieveTokenValue<{ userID: string }>(token);
-
-    const user = await this.userService.findByUid(userID);
+    const { email, iat } = await retrieveTokenValue<{
+      email: string;
+      iat: number;
+    }>(token);
+    const user = await this.userService.findOrFailByEmail(email);
 
     if (!user)
       throw new UnauthorizedException(
         'The user belonging to this token no longer exist',
       );
+    const hasUserPasswordChanged = await this.userService.userChangedPassword(
+      user,
+      iat,
+    );
 
-    // if (this.userService.userChangedPassword(user, iat))
-    //   throw new UnauthorizedException(
-    //     'User recently changed password! Please log in again.',
-    //   );
+    if (hasUserPasswordChanged) {
+      throw new UnauthorizedException(
+        'User recently changed password! Please log in again.',
+      );
+    }
 
     return user;
   }

@@ -418,9 +418,8 @@ export class UserAuthService {
     }
   }
 
-  async changePassword(data: changePasswordDto, header: Request) {
+  async changePassword(data: changePasswordDto, user: any) {
     try {
-      const id = Number(header);
       const { oldPassword, newPassword, confirmPassword } = data;
       if (newPassword != confirmPassword) {
         throw new BadRequestException({
@@ -428,9 +427,6 @@ export class UserAuthService {
           message: 'Passwords do not match',
         });
       }
-
-      //get user by id
-      const user = await this.prisma.user.findFirst({ where: { id } });
 
       const passwordValid = await bcrypt.compare(oldPassword, user.password);
       if (!passwordValid) {
@@ -443,7 +439,7 @@ export class UserAuthService {
       //update the user
       const updateUser = await this.prisma.user.update({
         where: {
-          id: id,
+          email: user.email,
         },
         data: {
           password: await bcrypt.hash(newPassword, 10),
@@ -524,6 +520,9 @@ export class UserAuthService {
   }
 
   async userChangedPassword(user: User, timestamp: number): Promise<boolean> {
+    if (user.passwordChangedAt === null) {
+      return false;
+    }
     if (user.passwordChangedAt) {
       const changedTimestamp = user.passwordChangedAt.getTime() / 1000;
       return timestamp < changedTimestamp;
@@ -637,5 +636,18 @@ export class UserAuthService {
       status: 'failed',
       message: 'Oops something went wrong',
     });
+  }
+
+  async findOrFailByEmail(email: string): Promise<any> {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          email: email,
+        },
+      });
+      return user;
+    } catch (error) {
+      throw new NotFoundException(error);
+    }
   }
 }

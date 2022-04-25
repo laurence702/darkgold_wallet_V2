@@ -21,7 +21,7 @@ import {
   changePasswordDto,
 } from './dto';
 import { JwtAuthGuard } from '@guards/jwt-auth.guard';
-import { User } from '.prisma/client';
+import { User } from './userDecorator';
 import AuthGuard from '@guards/auth';
 
 /**
@@ -60,6 +60,7 @@ export class UserAuthController {
   @Put('change-pin')
   async changePin(@Body() body: any, @Request() req: any): Promise<any> {
     const userId = await this.getLoggedInUser(req, 'userIdOnly');
+    console.log(req.user);
     return this.userAuthService.changePin(body, userId);
   }
 
@@ -115,9 +116,9 @@ export class UserAuthController {
   @Put('change-password')
   changePassword(
     @Body() body: changePasswordDto,
-    @Request() req: any,
+    @User() user: any,
   ): Promise<any> {
-    return this.userAuthService.changePassword(body, req.user.userId);
+    return this.userAuthService.changePassword(body, user);
   }
 
   @Post('resend-verification')
