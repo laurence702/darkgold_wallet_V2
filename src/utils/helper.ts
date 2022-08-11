@@ -1,15 +1,15 @@
 import axios from 'axios';
+import messagebird, { MessageParameters } from 'messagebird';
 import DeviceDetector = require('device-detector-js');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const randomstring = require('randomstring');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const twilio = require('twilio');
+
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const sender = '+12347040324';
 
 import * as AWS from 'aws-sdk';
-import { randomInt } from 'crypto';
 
 const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
 const s3 = new AWS.S3();
@@ -76,18 +76,20 @@ export const fileUpload = async (file: {
 };
 
 export const sendSms = async (body: any, recipient: string): Promise<any> => {
-  if (accountSid && authToken) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const client = new twilio(accountSid, authToken);
-    client.messages
-      .create({
-        body: body,
-        to: recipient, // Text this number
-        from: sender, // From a valid Twilio number
-      })
-      .then((message: any) => console.log(message.sid))
-      .catch((err: any) => console.log(err));
-  } else {
-    console.log('No SID and auth token found');
-  }
+  console.log('recipient', recipient);
+  const params: MessageParameters = {
+    originator: 'dg',
+    recipients: [recipient],
+    body,
+  };
+
+  messagebird(process.env.MSG_BIRD_API_KEY).messages.create(
+    params,
+    function (err, response) {
+      if (err) {
+        return console.log(err);
+      }
+      console.log(response);
+    },
+  );
 };
