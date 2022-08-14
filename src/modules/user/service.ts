@@ -1,23 +1,21 @@
-import { randomInt } from 'crypto';
-import { sendSms } from '../../utils/helper';
 import {
-  Injectable,
   BadRequestException,
+  HttpStatus,
+  Injectable,
   InternalServerErrorException,
   NotFoundException,
-  HttpStatus,
-  HttpCode,
 } from '@nestjs/common';
-import PrismaService from '../../services/prisma';
-import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
+import { randomInt } from 'crypto';
+import PrismaService from '../../services/prisma';
+import { sendSms } from '../../utils/helper';
 import {
-  RegisterDto,
-  LoginDto,
-  VerificationDto,
-  ForgotPasswordDto,
-  ResetPasswordDto,
   changePasswordDto,
+  ForgotPasswordDto,
+  RegisterDto,
+  ResetPasswordDto,
+  VerificationDto,
 } from './dto';
 const referralCodeGenerator = require('referral-code-generator');
 
@@ -27,13 +25,8 @@ import {
   getUserDevice,
 } from '../../utils/helper';
 //import { EmailTemplates } from '../../utils/email.template'
-import {
-  sendUserWelcomeMail,
-  sendForgotPasswordToken,
-} from '@utils/email.service';
-import { USER_ROLES, User } from '@prisma/client';
-import { Number } from 'aws-sdk/clients/iot';
-import { Request } from 'express';
+import { User, USER_ROLES } from '@prisma/client';
+import { sendForgotPasswordToken } from '@utils/email.service';
 
 /***
  *
@@ -643,6 +636,10 @@ export class UserAuthService {
       const user = await this.prisma.user.findFirst({
         where: {
           email: email,
+        },
+        include: {
+          money_sent: {},
+          money_received: {},
         },
       });
       return user;

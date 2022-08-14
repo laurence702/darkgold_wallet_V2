@@ -55,13 +55,14 @@ export class TransactionService {
           spID: payload.senderSpid,
         },
       });
+      if (!sender) throw new BadRequestException('User spID not found');
       if (sender) {
         const data = { sender, payload };
         if (+payload.pin !== +sender.txPin) {
           console.log(data.payload.pin, data.sender.txPin);
           throw new BadRequestException('Wrong Pin');
         }
-        if ((await this.BalanceSufficientToSend(data)) == false) {
+        if ((await this.BalanceSufficientToSend(data)) === false) {
           throw new BadRequestException(
             'Insufficient balance, fund wallet to proceed',
           );
