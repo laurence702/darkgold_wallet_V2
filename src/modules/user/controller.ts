@@ -1,28 +1,26 @@
+import AuthGuard from '@guards/auth';
+import { JwtAuthGuard } from '@guards/jwt-auth.guard';
 import {
+  BadRequestException,
   Body,
-  Request,
   Controller,
+  Delete,
+  Get,
+  Param,
   Post,
   Put,
-  Get,
+  Request,
   UseGuards,
-  Req,
-  BadRequestException,
-  Delete,
-  Param,
 } from '@nestjs/common';
-import { UserAuthService } from './service';
 import {
-  RegisterDto,
-  LoginDto,
-  VerificationDto,
-  ForgotPasswordDto,
-  ResetPasswordDto,
   changePasswordDto,
+  ForgotPasswordDto,
+  RegisterDto,
+  ResetPasswordDto,
+  VerificationDto,
 } from './dto';
-import { JwtAuthGuard } from '@guards/jwt-auth.guard';
+import { UserAuthService } from './service';
 import { User } from './userDecorator';
-import AuthGuard from '@guards/auth';
 
 /**
  * @author Francis Laurece
@@ -35,6 +33,16 @@ export class UserAuthController {
   @Get('allUsers')
   allUsers(): any {
     return this.userAuthService.getAllUsers();
+  }
+
+  @Get('users-count')
+  usersCount() {
+    return this.userAuthService.usersCount();
+  }
+
+  @Get('total-dg')
+  totaldg() {
+    return this.userAuthService.total_dg();
   }
 
   @Post('register')

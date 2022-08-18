@@ -36,6 +36,19 @@ import { sendForgotPasswordToken } from '@utils/email.service';
 export class UserAuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
+  async usersCount() {
+    const userCounts = await this.prisma.user.count();
+    return { count: userCounts };
+  }
+
+  async total_dg() {
+    return await this.prisma.user.aggregate({
+      _sum: {
+        acct_balance: true,
+      },
+    });
+  }
+
   async makeAdmin(payload: any) {
     console.log(payload);
     try {
