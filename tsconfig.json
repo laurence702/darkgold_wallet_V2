@@ -2,9 +2,7 @@
   "extends": "./tsconfig.paths.json",
   "compilerOptions": {
     "module": "CommonJS",
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "declaration": true,
     "noImplicitAny": true,
     "removeComments": true,
@@ -20,7 +18,5 @@
     "importHelpers": true,
     "moduleResolution": "node"
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

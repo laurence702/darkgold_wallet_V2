@@ -3,15 +3,27 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { User } from '@prisma/client';
 import PrismaService from '@services/prisma';
-import { CreateTransactionDto, UpdateTransactionDto } from './dto';
+import { fundAccountDto } from './transaction-dto';
 const referralCodeGenerator = require('referral-code-generator');
 
 @Injectable()
 export class TransactionService {
   constructor(private prisma: PrismaService) {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  create(createTransactionDto: CreateTransactionDto) {}
+
+  fundUserAccount(fundUserDto: fundAccountDto): Promise<User> {
+    return this.prisma.user.update({
+      data: {
+        acct_balance: {
+          increment: fundUserDto.amount,
+        },
+      },
+      where: {
+        spID: fundUserDto.spID,
+      },
+    });
+  }
 
   async createTransferPin(payload: any) {
     try {
@@ -144,10 +156,6 @@ export class TransactionService {
 
   findOne(id: number) {
     return `This action returns a #${id} transaction`;
-  }
-
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
   }
 
   remove(id: number) {

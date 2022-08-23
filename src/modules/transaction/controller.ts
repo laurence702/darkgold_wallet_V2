@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from '@guards/jwt-auth.guard';
 import {
   Body,
   Controller,
@@ -6,19 +7,27 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
-import { UpdateTransactionDto } from './dto';
 import { TransactionService } from './service';
+import { fundAccountDto } from './transaction-dto';
 
 @Controller('transaction')
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
+  @Post('/fund')
+  fundUserAccount(@Body() fundDto: fundAccountDto) {
+    return this.transactionService.fundUserAccount(fundDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post()
   transferCoins(@Body() payload: any) {
     return this.transactionService.transferFunds(payload);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('setpin')
   createPin(@Body() payload: any) {
     return this.transactionService.createTransferPin(payload);
@@ -34,11 +43,9 @@ export class TransactionController {
     return this.transactionService.findOne(+id);
   }
 
+  // @Body() updateTransactionDto: UpdateTransactionDto,
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateTransactionDto: UpdateTransactionDto,
-  ) {
+  update(@Param('id') id: string) {
     //return this.transactionService.update(+id, updateTransactionDto);
   }
 

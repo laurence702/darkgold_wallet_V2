@@ -29,7 +29,7 @@ import { User } from './userDecorator';
 export class UserAuthController {
   constructor(private readonly userAuthService: UserAuthService) {}
 
-  @UseGuards(JwtAuthGuard, AuthGuard)
+  // @UseGuards(JwtAuthGuard, AuthGuard)
   @Get('allUsers')
   allUsers(): any {
     return this.userAuthService.getAllUsers();
