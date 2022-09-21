@@ -1,10 +1,9 @@
 import axios from 'axios';
-import messagebird, { MessageParameters } from 'messagebird';
+import { Client, TemplatedMessage } from 'postmark';
 import DeviceDetector = require('device-detector-js');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const randomstring = require('randomstring');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const sender = '+12347040324';
@@ -75,21 +74,36 @@ export const fileUpload = async (file: {
   }
 };
 
-export const sendSms = async (body: any, recipient: string): Promise<any> => {
-  console.log('recipient', recipient);
-  const params: MessageParameters = {
-    originator: 'dg',
-    recipients: [recipient],
-    body,
-  };
-
-  messagebird(process.env.MSG_BIRD_API_KEY).messages.create(
-    params,
-    function (err, response) {
-      if (err) {
-        return console.log(err);
-      }
-      console.log(response);
+export const sendOtpEmail = async (name: string, email: string, otp: any) => {
+  const postMarkKey = process.env.POSTMARK_KEY;
+  const client = new Client(postMarkKey);
+  const template: TemplatedMessage = {
+    To: email,
+    TemplateModel: {
+      name,
+      otp,
     },
-  );
+    From: 'info@ourdigitalgold.com',
+    TemplateId: 29244876,
+  };
+  client.sendEmailWithTemplate(template);
 };
+
+// export const sendSms = async (body: any, recipient: string): Promise<any> => {
+//   console.log('recipient', recipient);
+//   const params: MessageParameters = {
+//     originator: 'dg',
+//     recipients: [recipient],
+//     body,
+//   };
+
+//   messagebird(process.env.MSG_BIRD_API_KEY).messages.create(
+//     params,
+//     function (err, response) {
+//       if (err) {
+//         return console.log(err);
+//       }
+//       console.log(response);
+//     },
+//   );
+// };

@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { randomInt } from 'crypto';
 import PrismaService from '../../services/prisma';
-import { sendSms } from '../../utils/helper';
+import { sendOtpEmail } from '../../utils/helper';
 import {
   changePasswordDto,
   ForgotPasswordDto,
@@ -146,8 +146,13 @@ export class UserAuthService {
             userID: addUser.userID,
           },
         });
-        const body = `Dear ${firstName} Your Digital gold verification code is ${verificationCode}`;
-        await sendSms(body, phoneNumber);
+        // const body = `Dear ${firstName} Your Digital gold verification code is ${verificationCode}`;
+
+        await sendOtpEmail(
+          addUser.firstName,
+          addUser.email,
+          addUser.verificationCode,
+        );
 
         return await this.login(email, password, true);
 
@@ -566,8 +571,8 @@ export class UserAuthService {
       });
       if (user) {
         const verificationCode = `${user.verificationCode}`;
-        const body = `Your verification code is ${verificationCode}`;
-        await sendSms(body, user.phoneNumber);
+        // const body = `Your verification code is ${verificationCode}`;
+        await sendOtpEmail(user.firstName, user.email, user.verificationCode);
         return {
           status: true,
           statusCode: HttpStatus.ACCEPTED,
