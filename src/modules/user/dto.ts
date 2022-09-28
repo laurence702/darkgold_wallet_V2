@@ -1,7 +1,5 @@
-import { USER_ROLES } from '@prisma/client';
 import {
   IsEmail,
-  Contains,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -12,10 +10,6 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'First Name cannot be empty' })
   @IsString()
   firstName: string;
-
-  @IsOptional()
-  @MinLength(6, { message: 'phone number cannot be less than six numbers' })
-  phoneNumber: string;
 
   @IsNotEmpty({ message: 'Last Name cannot be empty' })
   @IsString()

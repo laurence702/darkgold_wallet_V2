@@ -86,16 +86,11 @@ export class UserAuthService {
 
   async register(data: RegisterDto) {
     const spID = this.generatePocketID();
-    const { firstName, lastName, email, password, phoneNumber } = data;
+    const { firstName, lastName, email, password } = data;
     try {
       const isEmailExist = await this.prisma.user.findFirst({
         where: {
           email: email,
-        },
-      });
-      const isPhoneExist = await this.prisma.user.findFirst({
-        where: {
-          phoneNumber: phoneNumber,
         },
       });
       //ensures two people dont have same spId
@@ -108,7 +103,7 @@ export class UserAuthService {
         //generate new ID
         const spID = this.generatePocketID();
       }
-      if (isEmailExist || isPhoneExist) {
+      if (isEmailExist) {
         throw new BadRequestException({
           status: 'failed',
           message: 'Email or Phone already taken',
@@ -123,7 +118,6 @@ export class UserAuthService {
           firstName: firstName,
           lastName: lastName,
           email: email,
-          phoneNumber: phoneNumber,
           password: await bcrypt.hash(password, 10),
           isActive: 1,
           isVerified: 0,

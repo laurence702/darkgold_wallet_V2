@@ -80,7 +80,6 @@ model User {
   firstName                 String?
   lastName                  String?
   email                     String       @unique
-  phoneNumber               String?      @unique
   txPin                     Int?
   spID                      String?      @unique
   acct_balance              Float?       @default(0.00)
